@@ -15,6 +15,7 @@ jobs:
           PROJECT_ID: ${{secrets.GCLOUD_PROJECT_ID}}
           APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
   authenticate:
+    needs: install
     runs-on: ubuntu-latest
     steps:
     - id: 'auth'
@@ -23,7 +24,7 @@ jobs:
       with:
         credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
   deploy:
-    needs: install
+    needs: authenticate
     name: Deploy
     runs-on: ubuntu-latest 
     steps:
