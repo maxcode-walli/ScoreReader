@@ -5,27 +5,24 @@ on:
       branches: ["master"]
 
 jobs:
-  job_id:
-    runs-on: 'ubuntu-latest'
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-
+  install:
+    name: Install CLI
+    runs-on: ubuntu-latest
     steps:
-    - uses: 'actions/checkout@v3'
-
-    - id: 'auth'
-      uses: 'google-github-actions/auth@v1'
-      with:
-        service_account: 'backend-functions@impactful-shard-374913.iam.gserviceaccount.com'
-
-    - id: 'deploy'
-      uses: 'google-github-actions/deploy-cloud-functions@v1'
-      with:
-        name: 'ScoreReader'
-        runtime: 'dotnet6'
-        entry_point: 'ScoreReader.ScoreReaderFunction'
-
-    # Example of using the output
-    - id: 'test'
-      run: 'curl "${{ steps.deploy.outputs.url }}"'
+      - uses: actions/checkout@v1
+      - uses: actions-hub/gcloud@master
+        env:
+          PROJECT_ID: ${{secrets.GCLOUD_PROJECT_ID}}
+          APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest 
+    steps:
+      - run: |
+          gcloud functions deploy ScoreReader --runtime dotnet6 --memory 128MB 
+          --trigger-topic TransactionScores --region europe-west3 --max-instances 1 
+          --project impactful-shard-374913 
+          --service-account backend-functions@impactful-shard-374913.iam.gserviceaccount.com 
+          --allow-unauthenticated --entry-point ScoreReader.ScoreReaderFunction
+          
+        
