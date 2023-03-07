@@ -5,12 +5,15 @@ on:
       branches: ["master"]
 
 jobs:
+  
   authenticate:
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
       id-token: 'write'
     steps:
+    - id: Checkout
+      uses: actions/checkout@v3.3.0
     - id: 'auth'
       uses: 'google-github-actions/auth@v1'
       with:
@@ -19,12 +22,7 @@ jobs:
 
     - name: 'Set up Cloud SDK'
       uses: 'google-github-actions/setup-gcloud@v1'
-  deploy:
-    needs: authenticate
-    name: Deploy
-    runs-on: ubuntu-latest 
-    steps:
-      - run: |
-          gcloud functions deploy ScoreReader --runtime dotnet6 --memory 128MB --trigger-topic TransactionScores --region europe-west3 --max-instances 1 --project impactful-shard-374913 --service-account backend-functions@impactful-shard-374913.iam.gserviceaccount.com --allow-unauthenticated --entry-point ScoreReader.ScoreReaderFunction
+    - name: Deploy
+      run: gcloud functions deploy ScoreReader --runtime dotnet6 --memory 128MB --trigger-topic TransactionScores --region europe-west3 --max-instances 1 --project impactful-shard-374913 --service-account backend-functions@impactful-shard-374913.iam.gserviceaccount.com --allow-unauthenticated --entry-point ScoreReader.ScoreReaderFunction
           
         
