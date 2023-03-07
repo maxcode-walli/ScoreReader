@@ -5,24 +5,20 @@ on:
       branches: ["master"]
 
 jobs:
-  install:
-    name: Install CLI
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions-hub/gcloud@master
-        env:
-          PROJECT_ID: ${{secrets.GCLOUD_PROJECT_ID}}
-          APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
   authenticate:
-    needs: install
     runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     steps:
     - id: 'auth'
-      name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v1'
       with:
-        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+        workload_identity_provider: 'projects/95940715192/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+        service_account: 'backend-functions@impactful-shard-374913.iam.gserviceaccount.com'
+
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v1'
   deploy:
     needs: authenticate
     name: Deploy
