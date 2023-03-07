@@ -11,14 +11,22 @@ namespace ScoreReader
     {
         public async Task MarkTransactionAsAnomalyAsync(TransactionScore transaction)
         {
-            FirestoreDb db = FirestoreDb.Create("impactful-shard-374913");
-
-            var path = $"users/{transaction.UserID}/accounts/{transaction.ExternalAccountID}/transactions/{transaction.TransactionID}";
-            var doc = await db.Document(path).GetSnapshotAsync();
-            if (doc != null && transaction.Label == "High risk") 
+            try
             {
-                var updates = new Dictionary<string, object>() { { "IsAnomaly", true } };
-                await db.Document(path).UpdateAsync(updates);
+                FirestoreDb db = FirestoreDb.Create("impactful-shard-374913");
+
+                var path = $"users/{transaction.UserID}/accounts/{transaction.ExternalAccountID}/transactions/{transaction.TransactionID}";
+                var doc = await db.Document(path).GetSnapshotAsync();
+                if (doc != null && transaction.Label == "High risk")
+                {
+                    var updates = new Dictionary<string, object>() { { "IsAnomaly", true } };
+                    await db.Document(path).UpdateAsync(updates);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
             }
         }
     }
