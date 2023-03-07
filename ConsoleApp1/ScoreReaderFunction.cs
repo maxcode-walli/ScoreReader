@@ -25,7 +25,7 @@ namespace ScoreReader
             {
                 // set a field Anomaly = true in Firestore
                 var firestore = new FirestoreService();
-                firestore.MarkTransactionAsAnomaly(transaction.UserID, transaction.ExternalAccountID, transaction.TransactionID)
+                firestore.MarkTransactionAsAnomaly(transaction);
             }
             
         }
