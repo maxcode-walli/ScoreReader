@@ -11,8 +11,6 @@ namespace ScoreReader
     {
         public async Task MarkTransactionAsAnomalyAsync(TransactionScore data)
         {
-            if (data.Label != "High risk") 
-                return;
             try
             {
                 FirestoreDb db = FirestoreDb.Create("impactful-shard-374913");
@@ -29,10 +27,17 @@ namespace ScoreReader
                     snapshot = await transactionsQuery.GetSnapshotAsync();
                     var transaction = snapshot.Documents.SingleOrDefault();
 
-                    if (transaction != null) 
+                    if (transaction != null)
                     {
                         var transactionDocument = db.Document(path + $"/{account.Id}/transactions/{transaction.Id}");
-                        await transactionDocument.UpdateAsync("IsAnomaly", true);
+                        if (data.Label.Contains("risk", StringComparison.OrdinalIgnoreCase)) 
+                        {
+                            await transactionDocument.UpdateAsync("IsAnomaly", true);
+                        }
+                        if (data.Label.Contains("legit", StringComparison.OrdinalIgnoreCase)) 
+                        {
+                            await transactionDocument.UpdateAsync("IsAnomaly", false);
+                        }
                     }
                 }
             }
