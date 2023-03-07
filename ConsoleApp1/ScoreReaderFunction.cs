@@ -12,14 +12,23 @@ namespace ScoreReader
 {
     public class ScoreReaderFunction : ICloudEventFunction<MessagePublishedData>
     {
+        public const string EVENT_TYPE_KEY = "pigeon.eventType";
+        public const string EVENT_TYPE_VALUE = "walli.TransactionReceived";
+
         public async Task HandleAsync(CloudEvent cloudEvent, MessagePublishedData data, CancellationToken cancellationToken)
         {
             var dataContent = data.Message?.TextData;
+            data.Message.Attributes.TryGetValue(EVENT_TYPE_KEY, out string eventType);
+
+            if (eventType != EVENT_TYPE_VALUE) 
+                return;
+
             var transaction = JsonConvert.DeserializeObject<TransactionScore>(dataContent);
 
             Console.WriteLine($"Read object: {JsonConvert.SerializeObject(transaction)}");
 
             var firestore = new FirestoreService();
+
             await firestore.MarkTransactionAsAnomalyAsync(transaction);         
         }
 
