@@ -15,14 +15,11 @@ jobs:
           PROJECT_ID: ${{secrets.GCLOUD_PROJECT_ID}}
           APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
   deploy:
+    needs: install
     name: Deploy
     runs-on: ubuntu-latest 
     steps:
       - run: |
-          gcloud functions deploy ScoreReader --runtime dotnet6 --memory 128MB 
-          --trigger-topic TransactionScores --region europe-west3 --max-instances 1 
-          --project impactful-shard-374913 
-          --service-account backend-functions@impactful-shard-374913.iam.gserviceaccount.com 
-          --allow-unauthenticated --entry-point ScoreReader.ScoreReaderFunction
+          gcloud functions deploy ScoreReader --runtime dotnet6 --memory 128MB --trigger-topic TransactionScores --region europe-west3 --max-instances 1 --project impactful-shard-374913 --service-account backend-functions@impactful-shard-374913.iam.gserviceaccount.com --allow-unauthenticated --entry-point ScoreReader.ScoreReaderFunction
           
         
