@@ -19,29 +19,9 @@ namespace ScoreReader
 
             Console.WriteLine($"Read object: {JsonConvert.SerializeObject(transaction)}");
 
-            var label = GetLabel(transaction.Score);
-
-            if (label.Equals("High risk")) 
-            {
-                // set a field Anomaly = true in Firestore
-                var firestore = new FirestoreService();
-                firestore.MarkTransactionAsAnomaly(transaction);
-            }
-            
+            var firestore = new FirestoreService();
+            await firestore.MarkTransactionAsAnomalyAsync(transaction);         
         }
 
-        private string GetLabel(float score)
-        {
-            if (score >= 800)
-            {
-                return "High risk";
-            }
-            if (score >= 400 && score < 800)
-            {
-                return "Low risk";
-            }
-
-            return "Legit";
-        }
     }
 }
