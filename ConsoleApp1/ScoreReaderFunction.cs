@@ -8,7 +8,7 @@ namespace ScoreReader
     public class ScoreReaderFunction : ICloudEventFunction<MessagePublishedData>
     {
         public const string EVENT_TYPE_KEY = "pigeon.eventType";
-        public const string EVENT_TYPE_VALUE = "walli.TransactionReceived";
+        public const string EVENT_TYPE_VALUE = "walli.TransactionAnomalyScoreCalculatedEventV1";
 
         public async Task HandleAsync(CloudEvent cloudEvent, MessagePublishedData data, CancellationToken cancellationToken)
         {
