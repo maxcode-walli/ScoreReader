@@ -2,11 +2,6 @@
 using Google.Cloud.Functions.Framework;
 using Google.Events.Protobuf.Cloud.PubSub.V1;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ScoreReader
 {
@@ -21,7 +16,10 @@ namespace ScoreReader
             data.Message.Attributes.TryGetValue(EVENT_TYPE_KEY, out string eventType);
 
             if (eventType != EVENT_TYPE_VALUE) 
+            {
+                Console.WriteLine($"Missing or incorrect value for attribute {EVENT_TYPE_KEY}");
                 return;
+            }
 
             var transaction = JsonConvert.DeserializeObject<TransactionScore>(dataContent);
 
