@@ -6,23 +6,22 @@ on:
 
 jobs:
   
-  authenticate:
+  deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
       id-token: 'write'
     steps:
-    - id: Checkout
+    - name: 'Checkout code'
       uses: actions/checkout@v3.3.0
-    - id: 'auth'
+    - name: 'Auth gcloud'
       uses: 'google-github-actions/auth@v1'
       with:
         workload_identity_provider: 'projects/95940715192/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
         service_account: 'backend-functions@impactful-shard-374913.iam.gserviceaccount.com'
-
-    - name: 'Set up Cloud SDK'
+    - name: 'Setup gcloud'
       uses: 'google-github-actions/setup-gcloud@v1'
-    - name: Deploy
+    - name: 'Deploy function'
       run: gcloud functions deploy ScoreReader --runtime dotnet6 --memory 128MB --trigger-topic TransactionScores --region europe-west3 --max-instances 1 --project impactful-shard-374913 --service-account backend-functions@impactful-shard-374913.iam.gserviceaccount.com --allow-unauthenticated --entry-point ScoreReader.ScoreReaderFunction
           
         
